@@ -1,0 +1,120 @@
+%----------------------------------------------------------------------------
+% 3. Lehetséges (új/modern) megoldások vizsgálata, elemzése és összehasonlítása
+%   - Rövid történet, kik írták, kik használják, mire használják
+%   - Rövid, elméleti "mi lenne ha használnánk" kifejtés
+%   - Összehasonlítás, döntés
+%
+% Előzmények (irodalomkutatás, hasonló alkotások), az ezekből levonható
+% következtetések
+% A tervezés részletes leírása, a döntési lehetőségek értékelése és a
+% választott megoldások indoklása
+
+%\chapter{Introduction}
+%\chapter{Earlier monitoring systems implemented in the dormitory}
+%\chapter{Requirements of the new monitoring system}
+\chapter{Available industry standard technologies \label{ch3}}
+%\chapter{System architecture}
+%\chapter{Implementation details and experiences}
+%\chapter{Results and evaluation}
+%\chapter{Future development opportunities}
+%----------------------------------------------------------------------------
+
+In this chapter we are going to view and compare some technologies that are
+able to satisfy our requirements.
+
+%----------------------------------------------------------------------------
+\section{Prometheus vs VictoriaMetrics}
+%----------------------------------------------------------------------------
+
+\subsection{Prometheus \label{bbPrometheus}}
+
+Prometheus\cite{prom} is an open-source monitoring system that is designed to monitor the
+performance and health of a computer system. It is commonly used in large,
+complex environments and is known for its scalability, reliability, and ability
+to provide real-time alerts and notifications when problems arise.
+
+\subsection{VictoriaMetrics}
+
+VictoriaMetrics\cite{vm} is an open-source time-series database and a monitoring
+solution that is designed to be highly efficient and scalable. Additionally, it
+offers a number of features that make it easy to manage and maintain, such as
+automatic data retention and garbage collection.
+
+\subsection{Comparison}
+
+Both systems are capable of performing the needed tasks. As VictoriaMetrics
+uses and/or compatible with Prometheus APIs it can work with the exact same
+software environments and can be a drop-in replacement. This is handy for us as
+\kszk's system administrators are already familiar with the needed exporters.
+
+VictoriaMetrics has some clear advantages over Prometheus for us\cite{vmspeed}:
+\begin{itemize}
+	\item it's local storage can work as a durable long-term storage % https://tech.bedrockstreaming.com/2022/09/06/monitoring-at-scale-with-victoriametrics.html
+	\item it utilizes CPU and RAM better
+\end{itemize}
+
+\subsection{Verdict}
+
+Although \kszk had utilized Prometheus in the past we decided to use
+VictoriaMetrics for this project.
+
+%----------------------------------------------------------------------------
+\section{ELK stack vs Loki and Promtail}
+%----------------------------------------------------------------------------
+
+\subsection{ELK stack \label{bbElk}}
+
+An ELK stack\cite{elk} is a term used to refer to a combination of three open-source
+tools: Elasticsearch, Logstash, and Kibana. These tools are used for different
+purposes, but they are often used together to create a powerful logging and
+monitoring solution. Elasticsearch is a search engine and data analysis tool
+that is used to store and index large volumes of data. Logstash is a data
+collection and processing tool that is used to ingest, transform, and filter
+data from a variety of sources. Kibana is a data visualization tool that is
+used to create dashboards and other visualizations from the data stored in
+Elasticsearch.
+
+\subsection{Loki and Promtail}
+
+Loki and Promtail\cite{lp} are part of a set of open-source tools for log management.
+Loki is a horizontally-scalable, highly-available log aggregation system. It is
+designed to be very efficient and can handle large amounts of log data.
+Promtail is a log scraping agent that can collect log data from a variety of
+sources, including containers and Kubernetes environments. It is designed to
+work seamlessly with Loki, allowing you to easily ingest and query your log
+data.
+
+\subsection{Comparison}
+
+ELK and Loki serve the same purpose yet they are completely different.
+
+Advantages of Loki over ELK:
+\begin{itemize}
+	\item easy to operate
+	\item requires much less resouces
+	\item collected logs can be visualized by Grafana
+	\item authorization (through Grafana)
+\end{itemize}
+
+Advantages of ELK over Loki:
+\begin{itemize}
+	\item supports much more complex searches
+\end{itemize}
+
+\subsection{Verdict}
+
+For our use cases Loki's capabilities seem fine although we can not see the
+future. On the other hand an ELK stack requires huge amounts of resources which
+would be a problem soon. We decided to use Loki.
+
+%----------------------------------------------------------------------------
+\section{Grafana \label{bbGrafana}}
+%----------------------------------------------------------------------------
+
+Grafana\cite{g} is an open-source data visualization tool known for its powerful and
+customizable dashboard features, which allow users to create real-time graphs,
+charts, and other visualizations from the data collected by other tools.
+
+Grafana supports a large array of data sources including Prometheus,
+VictoriaMetrics and Loki. It also supports authentication and authorization
+through OAuth 2.0.

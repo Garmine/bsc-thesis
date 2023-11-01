@@ -1,0 +1,75 @@
+\begin{lstlisting}[language=yaml,caption=./Chart.yaml]
+apiVersion: v2
+name: snmp-exporter-target
+description: Scrape configs for SNMP exporter
+type: application
+version: 0.0.0
+appVersion: "yolo"
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml,caption=./templates/\_helpers.tmpl]
+{{- define "name" }}
+{{- .Chart.Name }}-{{.Release.Name}}
+{{- end }}
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml,caption=./templates/snmp-exporter.yaml]
+{{- $global := . }}
+{{- range .Values.Devices }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: "{{ template "name" $global }}-{{ . }}"
+spec:
+  jobName: "{{ . }}"
+  targetEndpoints:
+    - targets:
+        - "{{ template "name" $global }}"
+      path: /snmp
+      params:
+        target: [ "{{ . }}" ]
+        module: [ sch_core_net_mibs ]
+{{- end }}
+\end{lstlisting}
+
+\newpage
+
+\begin{lstlisting}[language=yaml,caption=./templates/noc-snmp-lb.yaml]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ template "name" . }}"
+spec:
+  ports:
+    - port: 80
+      targetPort: 9116
+      name: exporter
+      protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: "{{ template "name" . }}"
+subsets:
+  - ports:
+      - port: 9116
+        name: exporter
+        protocol: TCP
+    addresses:
+      {{- range .Values.NOCIPs }}
+      - ip: {{ . }}
+      {{- end }}
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml,caption=./values.yaml]
+NOCIPs:
+  - 10.0.208.241
+  - 10.0.208.242
+
+Devices:
+  - rtr-1
+\end{lstlisting}

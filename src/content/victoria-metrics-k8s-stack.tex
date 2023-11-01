@@ -1,0 +1,117 @@
+\begin{lstlisting}[language=yaml,caption=victoria-metrics-k8s-stack.tex]
+operator:
+  enabled: true
+
+serviceAccount:
+  create: true
+
+defaultRules:
+  create: true
+  rules:
+    etcd: false
+
+additionalVictoriaMetricsMap:
+
+victoria-metrics-operator:
+  operator:
+    disable_prometheus_converter: false
+    enable_converter_ownership: true
+    psp_auto_creation_enabled: false
+  rbac:
+    pspEnabled: false
+
+vmsingle:
+  enabled: true
+  # spec for VMSingle crd
+  # https://github.com/VictoriaMetrics/operator/blob/master/docs/api.MD#vmsinglespec
+  spec:
+    retentionPeriod: "14"
+    replicaCount: 1
+    extraArgs: {}
+    storage:
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: openebs-zfspv
+
+vmalert:
+  enabled: false
+
+vmagent:
+  enabled: true
+  additionalRemoteWrites: []
+  spec:
+    scrapeInterval: 25s
+    externalLabels:
+      cluster: beholder
+
+# Grafana dependency chart configuration. For possible values refer to https://github.com/grafana/helm-charts/tree/main/charts/grafana#configuration
+grafana:
+  enabled: true
+  sidecar:
+    datasources:
+      enabled: true
+      createVMReplicasDatasources: false
+      jsonData: {}
+    dashboards:
+      additionalDashboardLabels: {}
+      additionalDashboardAnnotations: {}
+      enabled: true
+      multicluster: false
+
+  forceDeployDatasource: false
+
+  additionalDataSources: []
+
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: "default"
+          orgId: 1
+          folder: ""
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+
+  dashboards:
+    default:
+      nodeexporter:
+        gnetId: 1860
+        revision: 22
+        datasource: VictoriaMetrics
+
+  defaultDashboardsEnabled: true
+
+  persistence:
+    enabled: true
+    type: statefulset
+    size: 10Gi
+    storageClassName: openebs-zfspv
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: traefik
+      kubernetes.io/tls-acme: "true"
+      cert-manager.io/cluster-issuer: cert-issuer
+      traefik.ingress.kubernetes.io/router.middlewares: monitoring-redirect-https@kubernetescrd
+
+    hosts:
+      - beholder.sch.bme.hu
+      - xn--ht8h.sch.bme.hu
+    tls:
+      - secretName: grafana-ingress-tls
+        hosts:
+          - beholder.sch.bme.hu
+          - xn--ht8h.sch.bme.hu
+
+  vmServiceScrape:
+    enabled: true
+    spec: {}
+
+kubeEtcd:
+  enabled: false # k3s does not have!
+\end{lstlisting}

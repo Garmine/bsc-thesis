@@ -1,0 +1,154 @@
+%----------------------------------------------------------------------------
+% 1. Korábban használt megoldások ismertetése, elemzése
+%   - Mi volt a rendszer, mit tudott
+%   - Legfontosabb: miért nem vált be
+%
+% Előzmények (irodalomkutatás, hasonló alkotások), az ezekből levonható
+% következtetések
+
+%\chapter{Introduction}
+\chapter{Earlier Monitoring Systems Implemented in the Dormitory \label{ch1}}
+%\chapter{Requirements of the new monitoring system}
+%\chapter{Available industry standard technologies}
+%\chapter{System architecture}
+%\chapter{Implementation details and experiences}
+%\chapter{Results and evaluation}
+%\chapter{Future development opportunities}
+%----------------------------------------------------------------------------
+
+The demand for monitoring of live services rose in \kszkfull just like it rose
+in the IT industry outside the \schfull. To satisfy this demand \kszk's members
+started to operate such systems. We are going to examine the most recent of
+these systems and take a look at why they were phased out.
+
+Note that these systems had been used long ago. These softwares changed a lot
+since then. We are going to asses them as they were seen by \kszk's member back
+then. The following sections are based on archived internal notes, e-mail
+threads and the memories of veteran \kszk members.
+
+%----------------------------------------------------------------------------
+\section{Nagios / Icinga (2009(?) - 2015)}
+%----------------------------------------------------------------------------
+
+The oldest system we have information about was a Nagios based monitoring
+appliance. It was a monolithic service written in C. Later on, Nagios was
+changed for it's open source fork, Icinga. The probable reasons for this were a
+better User Interface and better User Experience overall.
+
+Nagios/Icinga served as the monitoring and alerting component of the stack
+while plain old syslog-ng collected logs from remote hosts.
+
+\subsection{Reasons for Phasing Out}
+
+Many services were not connected to this system and this was a recurring issue
+back then.
+
+Another problem was that every alert and notification flooded a single mailing
+list. Every user was expected to filter these mails themselves.  The high level
+of noise made real alerts hard to see and thus they were often ignored.
+
+It's web interface was also very primitive. It did not support authorization,
+customization nor visualization by itself.
+
+\subsection{Compared to Modern Standards}
+
+Comparison is difficult as this was set up much more than 10 years ago. System
+administration was very different back then, long before Docker, Ansible and
+Continous Integration.
+
+%----------------------------------------------------------------------------
+\section{Zabbix (2015 - 2019)}
+%----------------------------------------------------------------------------
+
+Icinga's successor system was Zabbix based. Zabbix heavily relied on Java back
+then and was also monolithic. It was a much more advanced system than Icinga,
+featuring built-in visualization, customizable user interface and
+authorization. This system sent alerts directly to system administrators. The
+advantage of this approach was less noise while the downside was less
+transparency.
+
+Log collecting was done the same way as before, with no advanced processing or
+querying. Only a forgotten Perl script made some daily statistics.
+
+\subsection{Reasons for Phasing Out}
+
+A huge downside of this system was its high system requirements. Large
+amounts of I/O made SSDs mandatory which wore out quickly. Not only I/O but RAM
+and CPU usage were intensive as well.
+
+Another downside was the Zabbix monitoring daemons. These were heavyweight Java
+applications shipped with their own JVMs. These pushed metrics to Zabbix.
+
+Many systems were not connected to this system either.
+
+\subsection{Compared to Modern Standards}
+
+Compared to newer systems several other downsides became apparent.
+
+Configurations were stored internally and thus configuration management would
+have been very hard if not impossible. The push-style metric collecting also
+made service discovery difficult. The monolithic desing and the usage of a
+relational database made scaling very difficult compared to newer stacks using
+clusters of smaller services and time series databases.
+
+On the other hand it's web UI was similar to modern visualization tools
+featuring user configurable dashboards and control panels.
+
+%----------------------------------------------------------------------------
+\section{Prometheus (2019 - 2021)}
+%----------------------------------------------------------------------------
+
+The most recent system was Prometheus (\autoref{bbPrometheus}) based with an
+Elasticsearch-Logstash-Kibana stack (\autoref{bbElk}) for receiving, processing
+and querying logs and Grafana (\autoref{bbGrafana}) for visualization, running
+on plain Docker. A standard Prometheus monitoring system architecture.
+
+The system featured Configuration Management and Continous Integration. These
+together ensured easier maintenance and usage of the system. Every tool and
+configuration was stored in multiple repositories on \kszk's GitLab server. CI
+and advanced configuration generation made the integration of new systems much
+easier.
+
+It was capable of monitoring Linux and Windows servers, network devices and
+even some very exotic devices of the \sch.
+
+Alert notifications were sent to relevant channels on \kszk's Mattermost as
+well as to other communications channels as required. This made alerts
+transparent and much less noisy.
+
+Higher number of services were integrated into this system than ever before,
+thanks to the above properties.
+
+\subsection{Reasons for Phasing Out}
+
+In order to achieve it's great features the system made use of many unique,
+customly created components. These included Docker container management,
+configuration generation and others. The downside of this solution was a very
+steep learning curve. Maintenance of this stack required the understanding of
+these tools. This would take too many hours for newcomers.
+
+For this reason and miscommunications the system was demolished but a new
+system was never made to take it's place until now. Luckily this time every
+tool and configuration is available to us in the project's git repositories.
+
+\subsection{Compared to Modern Standards}
+
+This software stack had all the attributes expected from a modern system.
+Authentication and authorization, a time series database, smaller services,
+scalability and more.
+
+%----------------------------------------------------------------------------
+\section{Lessons learned}
+%----------------------------------------------------------------------------
+
+If we want a monitoring system to be fully utilized and maintained for a long
+period of time it needs to have some key properties. These are:
+\begin{itemize}
+	\item A way to add new systems with minimal effort
+	\item Lightweight, simple tools for monitoring targets
+	\item Industry standard tools instead of custom ones to achieve a shallow learning curve
+	\item Coherent documentation
+	\item Useful alert notifications targeted only at those who are interested in it
+	\item Interactive, easy to use and highly customizable web UI
+	\item Pretty visualization
+\end{itemize}

@@ -1,0 +1,119 @@
+%----------------------------------------------------------------------------
+% 0. Probléma ismertetése röviden
+%   - Mi az a monitoring & alerting, miért jó nekünk
+%
+% Bevezetés: a feladat értelmezése, a tervezés célja, a feladat indokoltsága, a
+% diplomaterv felépítésének rövid összefoglalása
+%
+% A bevezető tartalmazza a diplomaterv-kiírás elemzését, történelmi
+% előzményeit, a feladat indokoltságát (a motiváció leírását), az eddigi
+% megoldásokat, és ennek tükrében a hallgató megoldásának összefoglalását.
+%
+% A bevezető szokás szerint a diplomaterv felépítésével záródik, azaz annak
+% rövid leírásával, hogy melyik fejezet mivel foglalkozik.
+
+\chapter{Introduction \label{ch0}}
+%\chapter{Earlier monitoring systems implemented in the dormitory}
+%\chapter{Requirements of the new monitoring system}
+%\chapter{Available industry standard technologies}
+%\chapter{System architecture}
+%\chapter{Implementation details and experiences}
+%\chapter{Results and evaluation}
+%\chapter{Future development opportunities}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+\section{Monitoring Systems}
+%----------------------------------------------------------------------------
+
+Maintaining one or two servers for personal purposes is not a daunting task. We
+can easily keep an eye on our hardwares and apply fixes when necessary. And if
+for some reason a server goes down it is not likely to cause issues for others.
+
+In a real-world production infrastructure the situation is radically different.
+Manually checking each physical machine's state is an overwhelming burden and
+it quickly becomes unfeasible. Sooner or later problems that could have been
+prevented are going to cause service disruptions. This is going to cause issues
+for users and the maintainers will only be notified through users' complaints.
+At this point in time it is too late as the service's reputation is damaged and
+the users are dissatisfied.
+
+The best solution to this is an automated monitoring system. These sofware
+stacks collect metrics from servers and other devices, detect error conditions
+and try to predict future failures. If neccessary, the personnel in charge are
+notified to take immediate action preventing the issue from affecting too many
+users. Modern systems also support the collection of logs as well as advanced
+analysis and visualization of all available data.
+
+%----------------------------------------------------------------------------
+\section{\kszkfull of \schfull}
+%----------------------------------------------------------------------------
+
+\kszkfull (\kszk for short) is a team of around 20 day-to-day active members.
+They are volunteers from the students of \vik. They provide various IT
+services for the Faculty's students and are responsible for the operation of
+\schfull's whole network.
+
+The monitoring system designed and implemented in this thesis will hopefully
+help \kszk improve the quality of their services while reducing workload on
+members.
+
+\subsection{Infrastructure}
+
+The IT infrastructure is comparable to that of a medium sized office building.
+\kszk's Sysadmin group operates around 20 physical servers running
+virtualization clusters, storage clusters and much more. \kszk's NETeam group
+operates around 10 physical servers and 50 network devices serving more than
+1000 endpoints for students living inside the \sch.
+
+\subsection{AuthSCH: Authentication and Authorization}
+
+AuthSCH is the central authentication and authorization service. It was created
+by Zoltán Janega \cite{ZolijBsc}, a veteran member of \kszk to replace the 3
+authentication systems used back then. Users data is stored in Active Directory
+and authentication is done over the OAuth 2.0 protocol.
+
+\subsection{osTicket: Support Ticketing System}
+
+Users' issues are reported through an osTicket instance. Between 20 to 100
+tickets are opened in each month, depending on which part of a semester we are
+in. Answering and resolving these tickets take a lot of time.
+
+\subsection{Mattermost: Main Communication Platform}
+
+Mattermost is an open-source communication platform with a rich feature set.
+Communications between the members of \kszk mainly take place on a self-hosted
+Mattermost server besides e-mails.
+
+\subsection{GitLab: DevOps Platform}
+
+GitLab is an open-core DevOps platform. It's not only a git server as it
+features an issue tracker, Continus Integration and much more. \kszk operates a
+self-hosted GitLab server for storing their source codes and configurations and
+to run CI jobs and more.
+
+%----------------------------------------------------------------------------
+\section{Overview of this Thesis}
+%----------------------------------------------------------------------------
+
+Monitoring systems are not unknown to \kszk. In \autoref{ch1} we are going to
+study earlier takes on implementing such systems in the \sch to figure out what
+is needed for a successful implementation.
+
+In \autoref{ch2} we are going to define the hard requirements for a monitoring
+system in \kszk's infrastructure.
+
+After that we are going to explore modern technologies suitable for our needs
+in \autoref{ch3}.
+
+Using the results of our research in previous chapters we are going to describe
+the new system architecture in \autoref{ch4}.
+
+In \autoref{ch5} we are going to start implementing the specified architecture
+and work out the details. 
+
+We are going to evaluate the new system in \autoref{ch6} and check out the
+results.
+
+Finally, in \autoref{ch7} we are going to discuss future work including
+possible improvements and new ideas as well.

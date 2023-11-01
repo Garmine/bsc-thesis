@@ -1,0 +1,31 @@
+\begin{lstlisting}[language=yaml,caption=./Chart.yaml]
+apiVersion: v2
+name: kszk-alerts
+description: Alert configuration via helm for CI
+type: application
+version: 0.0.0
+appVersion: "PESTILIENCE"
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml,caption=./templates/kszk-alerts.yaml]
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: kszk-alerts
+  namespace: monitoring
+spec:
+  {{- .Values.spec | toYaml | trim | nindent 2 }}
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml,caption=./values.yaml]
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+spec:
+  groups:
+  - name: kszk-alerts
+    rules: [ ]
+
+# Very quick and very dirty CI solution for now.
+# Feel free to modify anything under .spec but please don't alter others work wihout consultation.
+# We are going to work on a much better solution in the near future.
+\end{lstlisting}

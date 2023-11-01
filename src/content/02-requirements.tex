@@ -1,0 +1,172 @@
+%----------------------------------------------------------------------------
+% 2. Követelmények megfogalmazása és ismertetése
+%
+% A feladatkiírás pontosítása és részletes elemzése
+
+%\chapter{Introduction}
+%\chapter{Earlier monitoring systems implemented in the dormitory}
+\chapter{Requirements of the New Monitoring System \label{ch2}}
+%\chapter{Available industry standard technologies}
+%\chapter{System architecture}
+%\chapter{Implementation details and experiences}
+%\chapter{Results and evaluation}
+%\chapter{Future development opportunities}
+%----------------------------------------------------------------------------
+
+Based on lessons learned from previous implementations and keeping in mind the
+structure and aims of the \kszkfull we can define the hard and soft
+requirements of a new and effective monitoring system.
+
+%----------------------------------------------------------------------------
+\section{Collecting and Storing Metrics and Logs}
+%----------------------------------------------------------------------------
+
+First of all, we have to collect various kinds of metrics logs from many kinds
+of services and hardware devices. This is essential in achieving the main aims
+of this project.
+
+Hardware devices include but are not limited to:
+\begin{itemize}
+	\item servers running Windows Operating Systems
+	\item servers running Linux Operating Systems
+	\item servers running VMWare ESXi
+	\item various Cisco switches, routers and access points
+	\item other exotic hardwares such as the ones observing the washing machines and dryers of the dormitory
+\end{itemize}
+
+Services include but are not limited to:
+\begin{itemize}
+	\item various databeses: MySQL, PostgreSQL, etc.
+	\item virtualization clusters: VMWare, Hyper-V, etc.
+	\item the Kubernetes cluster
+	\item storage servers and storage clusters
+	\item the mailing service and mailing lists
+	\item the dormitory's network and internet access
+	\item unique services developed for internal use
+\end{itemize}
+
+Collecting metrics from higher level devices such as Linux hosts can be
+achieved in many ways as these can run almost anything. The most common way of
+achieving this is by running one or more monitoring daemons on the specific host.
+These daemons expose the metrics via an HTTP interface from which the
+monitoring solution pulls the metrics from.  As for network devices the options
+are limited as often it is impossible to run arbitrary software on them. The
+industry standard way of probing these devices is via the SNMP protocol.
+
+Collecting logs on the other hand is the other way around: devices push their
+logs onto the centralized log collector server. Servers and such have many
+options to chose from just like before. The industry standard solution for
+network devices is via the syslog protocol.
+
+Collecting metrics and logs (if applicable) from unique devices and services
+might require special solutions and thus the system must be highly flexible.
+
+%----------------------------------------------------------------------------
+\section{Effective long-term storage of historical data}
+%----------------------------------------------------------------------------
+
+Even though the dormitory's IT systems are small compared to a larger IT
+company the sheer amount of metrics and logs collected from every device and
+service can reach huge sizes on the long run. We must keep in mind that the
+\kszk's resources are limited.
+
+In order to minize the storage requirements the system must be capable of
+selective retention of the collected data. Per-second CPU metrics don't hold
+much value after a day or so while firewall logs might be valuable even after
+years.
+
+Older data is much less frequently accessed. The ability to store these entries
+highly compressed and on another dedicated storage server would be much more
+cost-effective and thus highly desired.
+
+%----------------------------------------------------------------------------
+\section{Detecting issues and alerting the necessary personnel}
+%----------------------------------------------------------------------------
+
+Through analyzation of the collected data we can identify coming and ongoing
+issues. Automatic detection of these problems and the alerting of the right
+\kszk members will prevent failures, improve the uptime and quality of our
+services and thus keeping our users more happy.
+
+Care must be taken though. False alerts or notifications sent to the wrong
+maintainers will decrease confidence in the system or worse real malfunctions
+are going to be ignored.
+
+The \kszk's main internal communication platforms are via e-mail and
+Mattermost. The system must be able to use these platforms at least.
+
+%----------------------------------------------------------------------------
+\section{Detecting issues of the monitoring system itself (meta-monitoring)}
+%----------------------------------------------------------------------------
+
+Relying on automated monitoring can make the life of \kszk's network and system
+administrators much easier but this dependency has a major risk. In case parts
+or whole of the monitoring system fails no automatic warnings will be
+generated. Another issue is that the monitoring server is located in the
+\kszk's server room inside the \schfull. In case the \sch's internet connection
+is severed the system can not send out alerts.
+
+Monitoring of the monitoring system itself (either by the system monitoring
+itself or two systems monitoring each other) is called meta-monitoring.
+
+Partial problems of the system (e.g. one effecting only the log collector) can
+likely be detected by the system monitoring itself. On the other hand a
+critical failure can only be detected by a separate, much simpler system
+running offsite.
+
+%----------------------------------------------------------------------------
+\section{Ease of use yet highly customizable}
+%----------------------------------------------------------------------------
+
+Not only the \kszk's hardware resources are limited so are it's members time.
+For this reason the configuration of metric scraping, log collection and
+alerting must be easy and should not require any special knowledge from anybody
+other than the monitoring system's adminitrator(s).
+
+At the same time the system must be highly customizable to accomodate unique
+solutions.
+
+This can be achieved by using industry-standard solutions (eliminating a steep
+learning curve) and fully automating common configurations while leaving custom
+solutions possible.
+
+%----------------------------------------------------------------------------
+\section{Authentication and authorization via AuthSCH}
+%----------------------------------------------------------------------------
+
+The system thus must be able to authenticate and authorize it's users via OAuth
+2.0.
+
+Based on the user's AD groups:
+\begin{itemize}
+	\item monitoring system admins must have superadmin priviliges
+	\item \kszk full members must be able to view everything and modify existing services or add new ones
+	\item \kszk fresh recruits must be able to view every log and metric
+	\item everyone else must be denied access
+\end{itemize}
+
+%----------------------------------------------------------------------------
+\section{Visualization of collected data}
+%----------------------------------------------------------------------------
+
+All the collected data would be meaningless without proper interpretation and
+visualization. Thus it is crucial for the system to provide a modern, web-based
+and easy to use interface for visualizing collected metrics and browsing logs.
+Users should be able to create new dashboards, access logs and much more
+without the help of the monitoring admins.
+
+Another important aspect of a pretty and modern interface are public relations.
+With easy to grasp graphs, diagrams and numbers it's much simpler to explain
+the countless hours the \kszk's voluntary administrators put into it's many
+services. More importantly it could inspire the upcoming generation to take
+part in our work and learn with us.
+
+%----------------------------------------------------------------------------
+\section{Security}
+%----------------------------------------------------------------------------
+
+As this system must have access to many internal systems and resources proper
+security is crucial. Not only the system must be defended from outside harm, it
+must also validate the authenticity of every metric and log it has access to.
+Without proper measures an adversary could inject false information into the
+system or much worse gain access to sensitive information.

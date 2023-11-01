@@ -1,0 +1,205 @@
+%----------------------------------------------------------------------------
+% 6. A futó rendszer értékelése
+%   - Összevetés a követelményekkel
+%   - Pro/contra, jó és rossz tapasztalatok
+%
+% A megtervezett műszaki alkotás értékelése, kritikai elemzése
+
+%\chapter{Introduction}
+%\chapter{Earlier monitoring systems implemented in the dormitory}
+%\chapter{Requirements of the new monitoring system}
+%\chapter{Available industry standard technologies}
+%\chapter{System architecture}
+%\chapter{Implementation details and experiences}
+\chapter{Results and evaluation \label{ch6}}
+%\chapter{Future development opportunities}
+%----------------------------------------------------------------------------
+
+During the time of writing the monitoring system has been running for months
+now with gradually increasing capabilities as time went on. Although most
+requirements were met the system is still in development. Let's take a look at
+the current state of it.
+
+%----------------------------------------------------------------------------
+\section{Evaluation of Requirements Fulfillment}
+%----------------------------------------------------------------------------
+
+The most important is meeting the requirements laid out in \autoref{ch2}.
+
+\subsection{Collecting and storing metrics and logs}
+
+The currently installed system is more than capable of collecting and storing
+metrics and logs. We are able to monitor every server platform and network
+device currently in use by \kszk.
+
+At the time of writing many systems including Windows Servers, Linux Servers
+and Cisco devices are already being monitored. Only logs are not being
+collected from network devices due to debates about an optimal and secure
+solution.
+
+\subsection{Effective long-term storage of historical data}
+
+The system is currently capable of storing data for short to mid terms. The
+implementation of long-term storage was least concern. With proper
+configuration such as fine tuned retentions and external storage both
+VictoriaMetrics and Loki are able to effectively storage large amounts of data
+only limited by available storage.
+
+\subsection{Detecting issues and alerting the necessary personnel}
+
+VictoriaMetrics' components already detect some basic issues and send out
+alerts to a test channel on \kszk's Mattermost platform. The software stack is
+capable of detecting much more complex issues and sending out alerts on many
+communications channels. This perfectly demonstrates our top priority:
+preventing future issues and detecting existing ones.
+
+\subsection{Detecting issues of the monitoring system itself (meta-monitoring)}
+
+Meta-monitoring is partially implemented. The system collects and visualizes
+many metrics and logs about itself as well has many alerts configured to notify
+it's maintainers about intervention needed. There are still some places to
+improve though. External monitoring of the system is very much possible but is
+not yet implemented at all. This is a crucial next step for production.
+
+\subsection{Ease of use yet highly customizable}
+
+The addition of CI and configuration generation made maintenance and the
+connecting of new systems very easy. The usage of industry-standard tools such
+as Kubernetes and Helm Charts and simple data formats such as YAML files help
+make the learning curve shallow. Internal documentations as well as this paper
+also help users and administrators alike.
+
+\subsection{Authentication and authorization via AuthSCH}
+
+Authentication and authorization via AuthSCH using OAuth 2.0 protocol is fully
+implemented and is already being used by \kszk's members.
+
+\subsection{Visualization of collected data}
+
+Visualization of collected logs and metrics is done using Grafana, a leading
+industry-standard tool. The vast array of publicly available dashboards and the
+easy configuration of new ones means it is able to handle everything collected
+by the rest of the software stack. The configured UI already handles the most
+important and interesting data correctly and presents them in an easy to
+understand graphical way.
+
+\subsection{Security}
+
+Access to the system is only granted to \kszk's members, the server is equipped
+with up to date software, an open source version of an enterprise Linux
+distribution, protected by firewall and connection can only be made through
+TLS. Detailed security analysis was not yet done as some features still have to
+be improved upon.
+
+\subsection{Summary}
+
+All in all the new monitoring system already fully satisfies 4 and partially
+satisfies 3 out of the 8 main requirements. There is no known difficulty in
+fully satisfying every requirement.
+
+%----------------------------------------------------------------------------
+\section{Evaluation of the Performance of the System}
+%----------------------------------------------------------------------------
+
+\subsection{CPU and RAM Usage}
+
+Currently system load and CPU usage is around 4\% on average. RAM usage is
+12GBs out of 32GB totally installed
+
+VictoriaMetrics scales very well even with much larger amounts of collected
+metrics.
+
+Loki's memory usage depends on it's configrations (e.g. cluster or monolithic
+modes) and the types of queries performed. The current setup uses small amount
+of memory when executing simpler queries. The amount of available RAM shouold
+be fine even with more hosts. For more complex queries with a larger number of
+hosts fine tuning of Loki is going to be neccessary and switching to a cluser
+mode of Loki is advised.
+
+\subsection{Disk Usage}
+
+At the moment only 13\% of the SSDs are being used by the host system. This is
+not expected to change much in the future as both metrics and logs are stored
+on the HDDs.
+
+Out of the 1TB available space on the ZFS pool located on the HDDs around 5GB
+is already being used by metrics and logs collected. This is after around one
+month of continous data collection. At this rate the HDDs will be fully
+utilized in 17 years. Right now at most 50\% of available metrics and 10\% of
+available logs are being collected. With larger adaptation this would only last
+around one to two years.
+
+Considering this during the following year data retention policies will have to
+be fine tuned and new, larger capacity HDDs will have to be acquired. A
+long-term and more effective storage solution should the developed in the next
+two years.
+
+\subsection{Network Usage}
+
+Network traffic is very minimal. The server has 4x1Gbit ethernet ports yet we
+only use around 4Mbit/s on the single connected port. Even with all ports
+redundantly configured and 500 times more incoming data the network bandwidth
+will not be a bottleneck.
+
+\subsection{Summary}
+
+The currently configured storage is ideal for development and testing purposes
+but it's going to be the first issue mid-term. This is very much expected from
+a service that collects data in every millisecond in it's uptime. For \kszk's
+infrastructure size CPU and RAM may not be a problem but fine tunings and
+configuration changes will have to be made on the long run.
+
+%----------------------------------------------------------------------------
+\section{Results of Continous Integration}
+%----------------------------------------------------------------------------
+
+\subsection{CI for Collecting Metrics from Servers}
+
+Before CI only 3 server were monitored for demonstration purposes. After the
+release of CI features to \kszk's member they quickly and voluntarily started
+to connect their own systems with only minimal to no help other than the
+provided documentation.
+
+Systems added by our users through CI:
+\begin{itemize}
+	\item 11 Linux systems with 19 exporters in total
+	\item 6 Windows systems with 6 exporters in total
+\end{itemize}
+
+Exporters installed by our users include from the generic Linux/Windows node
+exporter to more specific ones such as database and ZFS exporters. They also
+imported or created many new dashboards when it was neccessary.
+
+\subsection{CI for Collecting Metrics from Network Devices}
+
+CI was also implemented for network devices and our users made use of it. After
+release 11 more Cisco devices were added to the system similarly to the
+previous case. A basic SNMP dashboard was also released that was later extended
+and improved by members of \kszk.
+
+\subsection{CI for Configuring Alerts}
+
+No new alerts were configured yet. The obvious cause of this is a lack of time
+as alerts were introduced recently compared to the time of writing. Alerts'
+configuration generation is also much less automated than the previously
+reviewed ones.
+
+\subsection{Summary}
+
+The three cases discussed above prove that with a carefully designed and easy
+to use configuration generation system members of \kszk will voluntarily
+connect their systems into the new monitoring apparatus with minimal or no help
+from it's maintainers.
+
+%----------------------------------------------------------------------------
+\section{Other Results of the Monitoring System running so far}
+%----------------------------------------------------------------------------
+
+The self-monitoring capabilities already helped during some experimentation and
+debug sessions.
+
+The preconfigured alerts managed to find two NTP synchronization issues
+immediately after only monitoring was configured. After the alert manager was
+properly configured later on we instantly received notifications for these
+alerts on \kszk's Mattermost.
+

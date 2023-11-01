@@ -1,0 +1,44 @@
+\begin{lstlisting}[language=yaml,caption=./Chart.yaml]
+apiVersion: v2
+name: node-exporter-target
+description: Scrape configs for Prometheus node exporter
+type: application
+version: 0.0.0
+appVersion: "kolbaasz"
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml,caption=./templates/\_helpers.tmpl]
+{{- define "name" }}
+{{- .Chart.Name }}-{{.Release.Name}}
+{{- end }}
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml,caption=./templates/node-exporter.yaml]
+{{- $global := . }}
+{{- range .Values.Devices }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: "{{ template "name" $global }}-{{ .Name }}"
+  namespace: monitoring
+spec:
+  targetEndpoints:
+    - targets:
+        {{- range .Targets }}
+        - "{{ . }}"
+        {{- end }}
+  jobName: "{{ .Name }}"
+{{- end }}
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml,caption=./values.yaml]
+Devices:
+  - Name: memory-alpha-and-beta
+    Targets:
+      - 10.0.69.101:9100
+      - 10.0.69.102:9100
+
+  - Name: trash
+    Targets: [ 152.66.209.79:9100 ]
+\end{lstlisting}

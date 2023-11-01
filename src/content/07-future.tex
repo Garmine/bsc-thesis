@@ -1,0 +1,155 @@
+%----------------------------------------------------------------------------
+% 7. Jövőbeni teendők, hogyan lehetne továbbfejleszteni a rendszert
+%
+% továbbfejlesztési lehetőségek
+
+%\chapter{Introduction}
+%\chapter{Earlier monitoring systems implemented in the dormitory}
+%\chapter{Requirements of the new monitoring system}
+%\chapter{Available industry standard technologies}
+%\chapter{System architecture}
+%\chapter{Implementation details and experiences}
+%\chapter{Results and evaluation}
+\chapter{Future Development Opportunities \label{ch7}}
+%----------------------------------------------------------------------------
+
+Besides the smaller imperfections and missing features described in the
+previous chapter there are still many great ideas that could be implemented in
+the future. Some of these are detailed in this chapter.
+
+%----------------------------------------------------------------------------
+\section{Improving Configuration Management and Enforcing Reproducibility}
+%----------------------------------------------------------------------------
+
+During development it was easier to take some shortcuts. Unfortunately this has
+resulted in violation of reproducibility. This must be addressed in the future.
+
+\subsection{Grafana Configurations}
+
+Grafana has a rich UI where users can configure and edit many things. This also
+means that any changes made are stored in some format internally. Currently
+these would be lost during a reinstallation. Applying some sort of version
+control to these would solve this problem.
+
+\subsection{Backups}
+
+Currently there are no backups of the system. In case of a catastrophic failure
+data and configurations could be lost forever which is unacceptable. Regular
+automated backups are the solution.
+
+\subsection{Ansible Scripts}
+
+Ansible scripts might be out of sync currently. Regurarly verifyng the
+reproducibility of installation and configuration would ensure the integrity of
+these. These, together with backups would make recoveries and hardware upgrades
+very quick and painless.
+
+\subsection{Advanced Configuration Generation \label{advconf}}
+
+Currently the three main configurations (exporters, SNMP and alerts) are
+completely separate. With the development of some common data model and
+configuration generation these could be unified. Adding a library of common
+configurations (such as alerts) would make the addition of new systems seem
+like child's play.
+
+%----------------------------------------------------------------------------
+\section{Granting Users Access to Internal Components}
+%----------------------------------------------------------------------------
+
+Many information about the system's internal states are available to our users
+thanks to self-monitoring. Yet there are still some components that would be
+very useful to them for debugging and experimentation.
+
+These are not available to users at the moment because authentication and
+authorization is not yet solved for them.
+
+\subsection{Access to the VMAgent component}
+
+VMAgent has a web UI where status and informations are displayed about every
+exporter. In some cases VMAgent has access to a specific exporter yet it's
+metrics are not seen by Grafan. This would help rule out communication issues
+between exporters and VictoriaMetrics.
+
+\subsection{Access to the VMAlert component}
+
+VMAlert has an HTTP interface where every fired alert is sent in a JSON
+response. This would help identify if a mistake was made in the VMAlert or the
+VMAlertmanager configuration.
+
+\subsection{Access to the VMAlertmanager component}
+
+VMAlertmanager has a web interface where every information is available about
+fired alerts and some actions (e.g. silencing) can be taken. This would be
+extremely useful for debugging alert routing and notifications.
+
+%----------------------------------------------------------------------------
+\section{Improving Log Collection}
+%----------------------------------------------------------------------------
+
+Log collection is very bare-bones right now and there is much room for
+improvement.
+
+\subsection{Configurations for Remote Promtails}
+
+Installing promtails on remote servers is the lone duty of the remote sysadmin
+right now. User experience could be greatly improved by providing extra
+documentation and examples for our users.
+
+\subsection{Collecting Logs from Network Devices}
+
+At the time of writing no logs are being collected from network devices. An
+architecture similar to the SNMP exporters' could be a solution to this
+problem.
+
+%----------------------------------------------------------------------------
+\section{Advanced Log Analysis}
+%----------------------------------------------------------------------------
+
+Once the monitoring system has access to every metric and log it's going to
+have more than enough information to theoretically be able to detect complex
+problems and suggest possible solutions.
+
+These issues are usually detected by our users themselves and then are reported
+in \kszk's support ticketing system. This is time consuming for both parties
+and can be a bad user experience.
+
+Advanced log analysis could solve this and provide users with enough
+information to fix issues themselves preventing ticket creation.
+
+Based on a crude analysis of tickets received during October 2022:
+\begin{itemize}
+	\item 32 tickets were received in total
+	\item 12 tickets could potentially be solved with this method
+	\item  8 tickets would need the assistance of a member of \kszk but we could create alerts and/or provide useful information
+	\item 11 tickets were requests that could be automated but not with the monitoring system
+	\item  1 ticket  could not be categorized
+\end{itemize}
+
+The second category is the one we are aiming for. A typical ticket of this
+category is about having no internet access. The \sch's network denies access
+to unknown devices. Often the cause of this is MAC randomization which could
+easily be detected by analysing SNMP and/or network logs.
+
+%TODO example ticket screenshot
+
+%----------------------------------------------------------------------------
+\section{Service Discovery}
+%----------------------------------------------------------------------------
+
+With Advanced Config Generation (\autoref{advconf}) adding new systems could be
+easy. But with service discovery this task could be (almost?) completely
+automated. There's nothing easier than doing nothing.
+
+VictoriaMetrics supports many kinds of service discoveries. These methods
+should be explored and evaluated for a possible solution.
+
+%----------------------------------------------------------------------------
+\section{Other Possibilities}
+%----------------------------------------------------------------------------
+
+A few ideas that could be improved upon:
+\begin{itemize}
+	\item Loki self-monitoring using Loki Canary
+	\item Interactive messages for Mattermost
+	\item Public vizualizations without authentication
+\end{itemize}

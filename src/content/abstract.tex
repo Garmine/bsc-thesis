@@ -1,0 +1,105 @@
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\selecthungarian
+
+%----------------------------------------------------------------------------
+% Abstract in Hungarian
+%----------------------------------------------------------------------------
+\chapter*{Kivonat}\addcontentsline{toc}{chapter}{Kivonat}
+
+Az automatikus felügyelő rendszerek feladata metrikákat gyűjteni hardverekről
+és szolgáltatásokról, hibákat találni és megpróbálni előre megjósolni a jövőben
+bekövetkező meghibásodásokat. Amennyiben szükséges értesítik a megfelelő
+személyzetet, hogy gyorsan intézkedhessenek ezáltal megakadályozva, hogy a
+probléma túl sok felhasználóra legyen hatással. A modern rendszerek támogatják
+továbba a naplóbejegyzések gyűjtését és fejlett elemzését, illetve minden
+elérhető adat vizualizációját.
+
+A Kollégiumi Számítástechnikai Kör (röviden KSZK) aktív tagsága nagyjából 20
+fő. Ők a Villamosmérnöki és Informatikai Kar olyan hallgatói, akik önkéntesként
+teszik munkájukat. Ők különféle informatikai szolgáltatásokat üzemeltetnek a
+VIK hallgatói számára és emellett a Schönherz Zoltán Kollégium teljes hálózatát
+is üzemeltetik.
+
+A szakdolgozatomban egy automatikus felügyelő rendszer megvalósítását mutatom
+be. Az elkészült rendszerben VictoriaMetrics gyűjti a metrikákat a szerverekről
+és a hálózati eszközökről egyaránt. A VMAlertmanager komponens küldi a
+riasztási értesítéseket egy Mattermost szerverre. Loki és Promtail gyűjti be és
+dolgozza fel a naplóbejegyzéseket. Folyamatos Integrációt használok új
+felügyelési célpontok bekötésére a futó rendszerbe úgy, hogy egy felügyelő
+rendszer adminisztrátor közbenjárására sincs szükség.
+
+Ez az új rendszer remélhetőleg segíteni fog a KSZK-nak emelni szolgáltatásai
+színvonalát miközben csökkenti a tagjaira hárult terheket.
+
+Ebben a dolgozatban leírom a teljes folyamatot, melynek eredménye a fent leírt
+rendszer implementálása. Tanulmányozom a KSZK által korábban megvalósított
+rendszereket annak érdekében, hogy rájöjjek mi kell egy sikeres
+megvalósításhoz. Ezen eredmények alapján leírom a KSZK-ban futó felügyelő
+rendszer kemény követelményeit és felkutatok olyan modern technológiákat,
+amelyek ki tudják elégíteni ezen követelményeket. Az így szerzett tudást
+felhasználva meghatározom egy VictoriaMetrics alapú rendszer szerkezetét, majd
+elkezdem kidolgozni a részleteket és megvalósítani a tervet. Értékelem az új
+rendszert és ellenőrzöm az elért eredményeket. Végül kifejtem miket lehetne még
+tenni a jövőben, beleértve lehetséges továbbfejlesztéseket és teljesen új
+ötleteket is.
+
+A dolgozat során elkészült rendszer megfelel a felállított követelményeknek. A
+KSZK tagjai már használatba is vették az elkészült funkciókat és a Folyamatos
+Integráció segítségével sok új rendszert kezdtek el megfigyelni.
+
+
+\vfill
+\selectenglish
+
+
+%----------------------------------------------------------------------------
+% Abstract in English
+%----------------------------------------------------------------------------
+\chapter*{Abstract}\addcontentsline{toc}{chapter}{Abstract}
+
+Automated monitoring systems collect metrics from hardwares and services,
+detect error conditions and try to predict future failures. If neccessary the
+right personnel are notified to take immediate action preventing the issue from
+affecting too many users. Modern systems also support the collection of logs as
+well as advanced analysis and visualization of every available data.
+
+\kszkfull (\kszk for short) is a team of around 20 day-to-day active members.
+They are volunteers from the students of \vik. They provide various IT services
+for the Faculty's students and are responsible for the operation of \schfull's
+whole network.
+
+In this thesis I implement an automated monitoring system. VictoriaMetrics
+scrapes metrics from servers and network devices. VMAlertmanager sends alert
+notifications to a Mattermost server. Loki and Promtail collect and process
+logs. Grafana visualizes collected metrics and logs. Continous Integration is
+used to integrate new monitoring targets into the running system without the
+intervention of a monitoring system administrator.
+
+This new system will hopefully help \kszk improve the quality of their services
+while reducing workload on members.
+
+In this thesis I describe the whole process resulting in the implementation of
+the system described above. I study earlier takes on implementing such systems
+by \kszk to figure out what is needed for a successful implementation. Based on
+these results I establish the hard requirements for a monitoring system in
+\kszk's infrastructure and explore modern technologies that can satisfy these
+requirements. Using the knowledge gained I describe the new system architecture
+for a VictoriaMetrics based solution and implement the specified architecture
+and work out the details. I evaluate the new system and check out the results.
+Finally I future work including possible improvements and new ideas as well.
+
+The implemented system satisfies the requirements established in this thesis.
+Members of \kszk are already using the completed functions and started
+monitoring various new systems with Continous Integration.
+
+
+\vfill
+\cleardoublepage
+
+\selectthesislanguage
+
+\newcounter{romanPage}
+\setcounter{romanPage}{\value{page}}
+\stepcounter{romanPage}

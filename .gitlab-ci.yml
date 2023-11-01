@@ -1,0 +1,13 @@
+stages: [ do_iit ]
+
+latex_buslakodo:
+  stage: do_iit
+  image: texlive/texlive
+  script:
+    - cd src
+    - latexmk -bibtex -synctex=1 -file-line-error -lualatex -shell-escape thesis.tex
+    - mv thesis.pdf ../thesis.pdf
+  artifacts:
+    paths:
+      - "thesis.pdf"
+
